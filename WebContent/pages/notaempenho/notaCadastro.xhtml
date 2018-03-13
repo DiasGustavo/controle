@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:composition template="/templates/modeloGeral.xhtml">
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="notacao" value="#{notaEmpenhoBean.acao}" />
+			<f:viewParam name="notId" value="#{notaEmpenhoBean.codigo}" />
+
+			<f:event listener="#{notaEmpenhoBean.carregarDados}"
+				type="preRenderView" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="conteudo">
+
+		<h:form id="formCadNota">
+
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="Cadastro Nota de Empenho" />
+				</f:facet>
+			</p:toolbar>
+
+			<h:panelGrid id="pnlNotaDados" columns="2">
+
+				<p:outputLabel value="Número da Nota:" />
+				<p:inputText maxlength="10" size="10"
+					value="#{notaEmpenhoBean.notaCadastro.numero}"
+					readonly="#{notaEmpenhoBean.acao == 'excluir'}">
+					<f:validateBean />
+				</p:inputText>
+
+				<p:outputLabel value="Valor:" />
+				<p:inputText maxlength="10" size="10"
+					value="#{notaEmpenhoBean.notaCadastro.valor}"
+					readonly="#{notaEmpenhoBean.acao == 'excluir'}"
+					converterMessage="Informe uma valor válido.">
+					<f:convertNumber pattern="0.00" />
+					<f:validateBean />
+				</p:inputText>
+
+				<p:outputLabel value="Observações:" />
+				<p:inputTextarea class="textarea" maxlength="50"
+					value="#{notaEmpenhoBean.notaCadastro.observacao}"
+					readonly="#{notaEmpenhoBean.acao == 'excluir'}">
+					<f:validateBean />
+				</p:inputTextarea>
+
+				<p:outputLabel value="Documento:" />
+				<p:selectOneMenu id="listaDocumentos"
+					value="#{notaEmpenhoBean.notaCadastro.documento}"
+					converter="documentoConverter" filter="true"
+					filterMatchMode="startsWith" style="width: 99%;">
+					<f:selectItem itemValue="" itemLabel="Selecione o Documento" />
+					<f:selectItems value="#{notaEmpenhoBean.listaDocumentos}"
+						var="documento" itemValue="#{documento}"
+						itemLabel="#{documento.processo}" />
+					<f:validateBean />
+				</p:selectOneMenu>
+
+			</h:panelGrid>
+
+			<h:panelGrid columns="5">
+				<p:commandButton value="Novo" actionListener="#{notaEmpenhoBean.novo}"
+					update=":formCadNota:pnlNotaDados"
+					rendered="#{notaEmpenhoBean.acao == 'novo'}" />
+				<p:commandButton value="Gravar"
+					actionListener="#{notaEmpenhoBean.salvar}"
+					update=":msgGlobal :formCadNota:pnlNotaDados"
+					rendered="#{notaEmpenhoBean.acao == 'novo'}" />
+				<p:button value="Voltar"
+					outcome="/pages/notaempenho/notaPesquisa.xhtml?faces-redirect=true" />
+				<p:commandButton value="Gravar"
+					actionListener="#{notaEmpenhoBean.editar}" update=":msgGlobal"
+					rendered="#{notaEmpenhoBean.acao == 'editar'}" />
+				<p:commandButton value="Excluir"
+					actionListener="#{notaEmpenhoBean.excluir}" update=":msgGlobal"
+					rendered="#{notaEmpenhoBean.acao == 'excluir'}" />
+			</h:panelGrid>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+
+</html>

@@ -1,0 +1,50 @@
+@CHARSET "UTF-8";
+
+.ui-widget, .ui-widget .ui-widget {
+	font-size: 90%;
+}
+
+.grid-login {
+	background-color: #f2f2f2;
+	border-radius: 8px;
+	border: 1px solid #ccc;
+	margin-top: 100px;
+	margin-left: 400px;
+	padding: 10px;
+	width: 50% al
+}
+
+.buttom-entrar {
+	margin-top: 40px;
+	margin-left: 400px;
+	padding: 10px;
+	width: 50%
+}
+
+.textarea {
+	width: 100%;
+	height: 100px;
+	padding: 12px 20px;
+	box-sizing: border-box;
+	border: 2px solid #ccc;
+	border-radius: 4px;
+	background-color: #f8f8f8;
+	font-size: 16px;
+	resize: none;
+}
+
+.reports-area {
+	background-image: url("#{resource['images/relatorios.png']}");		
+	width: 300px;
+	height: 300px;	
+		
+}
+
+.image-relatorio {
+	margin-left: 500px;	
+	margin-top: 5px;
+	width: 600px;
+	height: 230px;	
+	background-repeat: no-repeat;
+	background-position: bottom right;
+}

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:composition template="/templates/modeloGeral.xhtml">
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="paracao" value="#{parecerBean.acao}" />
+			<f:viewParam name="parId" value="#{parecerBean.codigo}" />
+			<f:event listener="#{parecerBean.carregarDados}" type="preRenderView" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="conteudo">
+		<h:form id="formCadParecer">
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="Cadastro Parecer" />
+				</f:facet>
+			</p:toolbar>
+			<p:separator />
+			<h:panelGrid id="pnlParecerDados" columns="4">
+
+				<p:outputLabel value="Tipo:" />
+				<p:selectOneMenu id="listaTipo"
+					value="#{parecerBean.parecerCadastro.tipo}">
+					<f:selectItem itemValue="" itemLabel="Selecione o Tipo" />
+					<f:selectItem itemValue="consumo" itemLabel="Consumo" />
+					<f:selectItem itemValue="obra" itemLabel="Obra" />
+					<f:selectItem itemValue="diária" itemLabel="Diária" />
+					<f:validateBean />
+				</p:selectOneMenu>
+				<p:spacer />
+				<p:spacer />
+
+				<p:outputLabel value="Número PCI:" />
+				<p:inputText id="numpci" maxlength="10" size="10"
+					value="#{parecerBean.parecerCadastro.numero}"
+					readonly="#{parecerBean.acao == 'excluir'}">
+					<f:validateBean />
+				</p:inputText>
+
+				<h:outputLabel value="Data: " />
+				<p:calendar id="entrada"
+					value="#{parecerBean.parecerCadastro.dataEntrada}"
+					pattern="dd/MM/yyyy" mask="true" mode="popup"
+					readonlyInput="#{parecerBean.acao == 'excluir'}" locale="pt"
+					timeZone="GMT-3">
+					<f:convertDateTime pattern="dd/MM/yyyy" timeZone="GMT-3" />
+					<f:validateBean />
+				</p:calendar>
+
+				<p:outputLabel value="Processo: " />
+				<p:selectOneMenu id="listaProcesso"
+					value="#{parecerBean.parecerCadastro.documento}"
+					converter="documentoConverter" filter="true" style="width: 230px;">
+					<f:selectItem itemValue="" itemLabel="Selecione o processo" />
+					<f:selectItems value="#{parecerBean.listaDocumentos}"
+						var="documento" itemValue="#{documento}"
+						itemLabel="#{documento.processo} #{documento.secretaria}" />
+					<f:validateBean />
+				</p:selectOneMenu>
+
+			</h:panelGrid>
+
+			<p:commandButton value="Atos" icon="ui-icon-circle-plus"
+				style="margin-top: 1%" oncomplete="PF ('DlgAtos').show();" />
+
+
+			<p:dataTable id="tblAtoChecklist"
+				emptyMessage="Nenhum registro encontrado."
+				value="#{parecerBean.listaChecklists}" var="checklist" rows="5"
+				paginator="true">
+
+				<p:column headerText="Descriacao">
+					<h:outputText value="#{checklist.atos.descricao}" />
+				</p:column>
+
+				<p:column headerText="Categoria">
+					<h:outputText value="#{checklist.atos.categoria}" />
+				</p:column>
+
+				<p:column headerText="Opções" style="width: 9%;">
+					<p:commandButton value="Remover"
+						actionListener="#{parecerBean.removerAtos(checklist)}"
+						update=":formCadParecer:tblAtoChecklist" process="@this">
+					</p:commandButton>
+				</p:column>
+
+			</p:dataTable>
+			<p:outputLabel value="Conclusão:" />
+			<p:inputTextarea id="conclusao" class="textarea" maxlength="600"
+				value="#{parecerBean.parecerCadastro.conclusao}"
+				readonly="#{parecerBean.acao == 'excluir'}">
+				<f:validateBean />
+			</p:inputTextarea>
+
+			<p:outputLabel value="Status: " />
+			<p:selectOneMenu id="listaStatus"
+				value="#{parecerBean.parecerCadastro.status}">
+				<f:selectItem itemValue="" itemLabel="Selecione o Status" />
+				<f:selectItem itemValue="conformidade" itemLabel="Conformidade" />
+				<f:selectItem itemValue="Conformidade parcial"
+					itemLabel="Conformidade Parcial" />
+				<f:selectItem itemValue="desconformidade"
+					itemLabel="desconformidade" />
+				<f:validateBean />
+			</p:selectOneMenu>
+			<h:panelGrid>
+				<p:outputLabel
+					value="Funcionário: #{parecerBean.autenticacaoBean.funcionarioLogado.nome}" />
+			</h:panelGrid>
+
+
+			<p:toolbar style="margin-top: 1%">
+				<p:toolbarGroup align="left">
+					<p:commandButton value="Gravar"
+						actionListener="#{parecerBean.salvar}"
+						update=":msgGlobal 
+						:formCadParecer:tblAtoChecklist 
+						:formCadParecer:listaProcesso 
+						:formCadParecer:listaStatus
+						:formCadParecer:listaTipo
+						:formCadParecer:numpci
+						:formCadParecer:entrada
+						:formCadParecer:conclusao"
+						rendered="#{parecerBean.acao == 'novo'}" />
+					<p:commandButton value="Novo" actionListener="#{parecerBean.novo}"
+						rendered="#{parecerBean.acao == 'novo'}" />
+					<p:commandButton value="Parecer"
+						actionListener="#{parecerBean.gerarParecer}" ajax="false"
+						onclick="this.form.target='_blank'"
+						rendered="#{parecerBean.parecerCadastro.numero != null and parecerBean.acao != 'excluir'}" />
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:commandButton value="Gravar"
+						actionListener="#{parecerBean.editar}" update=":msgGlobal"
+						rendered="#{parecerBean.acao == 'editar'}" />
+					<p:commandButton value="Excluir"
+						oncomplete="PF('confirmacaoExcluir').show();"
+						rendered="#{parecerBean.acao == 'excluir'}" />
+					<p:button value="voltar"
+						outcome="/pages/parecer/parecerPesquisa.xhtml?faces-redirect=true" />
+				</p:toolbarGroup>
+			</p:toolbar>
+		</h:form>
+
+		<!-- Dialogo de Atos -->
+		<p:dialog closable="true" draggable="true" modal="true"
+			resizable="false" header="Pesquisa Atos" widgetVar="DlgAtos"
+			appendTo="@(body)" height="400" width="900">
+			<h:form id="formAtos">
+				<p:dataTable emptyMessage="Nenhum registro encontrado."
+					value="#{parecerBean.listaAtos}"
+					filteredValue="#{parecerBean.listaAtosFiltrados}" var="ato"
+					rows="7" paginator="true" widgetVar="tblAtos">
+
+					<p:column headerText="Código" filterBy="#{ato.id}"
+						filterStyle="max-width: 90%; min-width: 90%" style="width: 9%;">
+						<h:outputText value="#{ato.id}" />
+					</p:column>
+
+					<p:column headerText="Descrição">
+						<h:outputText value="#{ato.descricao}" />
+					</p:column>
+
+					<p:column headerText="Categoria" filterBy="#{ato.categoria}"
+						filterMatchMode="exact">
+
+						<f:facet name="filter">
+							<p:selectOneMenu onchange="PF('tblAtos').filter()"
+								style="width:200px">
+								<f:selectItem itemLabel="Sel. categoria" itemValue="#{null}"
+									noSelectionOption="true" />
+								<f:selectItems value="#{parecerBean.listaCategorias}" />
+							</p:selectOneMenu>
+						</f:facet>
+
+						<h:outputText value="#{ato.categoria}" />
+					</p:column>
+
+					<!-- botões -->
+					<p:column style="width:3%;text-align: center">
+						<p:commandButton icon="ui-icon-circle-check"
+							actionListener="#{parecerBean.adicionarAtos(ato)}"
+							update=":formCadParecer:tblAtoChecklist" />
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+
+		<!-- MENSAGEM PARA CONFIRMAÇÃO DE EXCLUSÃO -->
+		<p:confirmDialog id="confirmacaoDialogExcluir" appendTo="@(body)"
+			message="Tem certeza que deseja EXCLUIR este parecer?"
+			header="Confirmação" severity="alert" widgetVar="confirmacaoExcluir">
+			<p:commandButton id="btnConfirmExcluir" value="Sim"
+				oncomplete="PF('confirmacaoExcluir').hide()"
+				icon="ui-icon-circle-check" action="#{parecerBean.excluir}"
+				update=":msgGlobal" />
+			<p:commandButton id="btnDeclineExcluir" value="Cancelar"
+				onclick="PF('confirmacaoExcluir').hide()" type="button"
+				icon="ui-icon-cancel" />
+		</p:confirmDialog>
+	</ui:define>
+</ui:composition>
+
+</html>

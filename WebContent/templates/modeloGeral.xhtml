@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:insert name="metadata" />
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Gerente Documentos SGD</title>
+	<h:outputStylesheet library="css" name="estilos.css" />
+	<h:outputScript library="js" name="locale-primefaces.js" />
+	<h:outputScript library="js" name="primefaces.js" />
+
+</h:head>
+<h:body>
+	<!-- Mensagem Geral -->
+	<p:growl id="msgGlobal" sticky="true" />
+
+	<p:layout fullPage="true">
+		<!-- topo -->
+		<p:layoutUnit size="110" position="north" resizable="false"
+			collapsible="false" closable="false" style="text-align: center;">
+			<p:graphicImage value="/resources/images/banner.jpg"
+				height="98%" width="100%"></p:graphicImage>
+
+		</p:layoutUnit>
+
+		<!-- rodapé -->
+		<p:layoutUnit
+			header="Desenvolvido pela Gerência TI da Prefeitura Municipal de Patos"
+			position="south" resizable="false" collapsible="false"
+			closable="false">
+		</p:layoutUnit>
+
+		<!-- menu -->
+		<p:layoutUnit size="200" position="west" resizable="false"
+			collapsible="false" closable="false">
+			<h:form id="formPrincipal">
+				<p:panelMenu id="pnlMenuPrincipal">
+					<p:submenu label="Sistema">
+						<p:menuitem value="Autenticação"
+							outcome="/pages/autenticacao.xhtml"
+							rendered="#{autenticacaoBean.funcionarioLogado.funcao == null}" />
+						<p:menuitem value="Principal" outcome="/pages/principal.xhtml"
+							rendered="#{autenticacaoBean.funcionarioLogado.funcao != null}" />
+						<p:menuitem value="Sair"
+							rendered="#{autenticacaoBean.funcionarioLogado.funcao != null}"
+							action="#{autenticacaoBean.sair}" />
+					</p:submenu>
+					<p:submenu label="Cadastros"
+						rendered="#{autenticacaoBean.funcionarioLogado.funcao != null}">
+						<p:menuitem value="Orgão"
+							outcome="/pages/orgao/orgaoPesquisa.xhtml"
+							rendered="#{autenticacaoBean.funcionarioLogado.funcao == 'administrador'}" />
+						<p:menuitem value="Empresa"
+							outcome="/pages/empresa/empresaPesquisa.xhtml" />
+						<p:menuitem value="Colaborador"
+							outcome="/pages/funcionario/funcionarioPesquisa.xhtml" />
+						<p:menuitem value="Atos" outcome="/pages/ato/atoPesquisa.xhtml" />
+						<p:menuitem value="Processo"
+							outcome="/pages/documento/documentoPesquisa.xhtml" />
+						<p:menuitem value="Nota de Empenho"
+							outcome="/pages/notaempenho/notaPesquisa.xhtml" />
+
+					</p:submenu>
+					<p:submenu label="Parecer"
+						rendered="#{autenticacaoBean.funcionarioLogado.funcao != null}">
+						<p:menuitem value="Parecer"
+							outcome="/pages/parecer/parecerPesquisa.xhtml" />
+					</p:submenu>
+					<p:submenu label="Relatórios"
+						rendered="#{autenticacaoBean.funcionarioLogado.funcao != null}">
+						<p:menuitem value="Documentos"
+							outcome="/pages/reports/relatorio_documentos.xhtml" />
+					</p:submenu>
+				</p:panelMenu>
+			</h:form>
+		</p:layoutUnit>
+
+		<!-- área de Trabalho -->
+		<p:layoutUnit position="center" resizable="false" collapsible="false"
+			closable="false">
+			<ui:insert name="conteudo" />
+		</p:layoutUnit>
+	</p:layout>
+</h:body>
+</html>
